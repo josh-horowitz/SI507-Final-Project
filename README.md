@@ -43,3 +43,7 @@ From there, I loop over the flights from the API and create edges between each a
 
 ## Interacting with Project Code:
 The code will prompt users for two airports (an origin and destination) that someone is trying to plan a trip between.
+
+## Demo Link:
+https://umich.zoom.us/rec/share/x4629Lz54ekcTwwKwaUTQuUtj0SOGJnFBO96usLZrx_miWOWMj_M7aA6EKKhZVL4.Q0Len8kKkhL1f1FS
+
