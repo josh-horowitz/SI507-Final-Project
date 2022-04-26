@@ -12,6 +12,24 @@ BASEURL = 'https://aeroapi.flightaware.com/aeroapi'
 BUSYAIRPORTS = ['KDFW', 'KDEN', 'KORD', 'KLAX', 'KCLT', 'KLAS', 'KPHX', 'KMCO', 'KSEA', 'KATL']
 CACHE_NAME = 'cache.json'
 
+class Flight():
+    def __init__(self, origin, destination, carrier, delay) -> None:
+        self.origin = origin
+        self.destination = destination
+        self.carrier = carrier
+        self.delay = delay
+
+    def __str__(self) -> str:
+        return f"Origin - {self.origin} | Destination - {self.destination} | Airline - {self.carrier} | Avg. Delay - {self.delay}"
+
+class Airport():
+    def __init__(self, name, flights) -> None:
+        self.name = name
+        self.flights = flights
+
+    def addFlight(self, flight):
+        self.flights.append(flight)
+
 def readJSON(filepath, encoding='utf-8'):
     """
     Reads a JSON document, decodes the file content, and returns a list or
@@ -103,40 +121,7 @@ def getResource(filepath, url, params=None):
 def getFlights(url, params=None):
 
     flights = AEROAPI.get(url, params=params).json()
-
-    #clean flights
-
-
     return flights
-
-# def buildGraph(flightData, flightDict):
-
-#     g = Graph()
-#     # loop over the movie data
-#     for flight in flightData:
-
-#         # for each actor, if the actor already exists, add it to the actor list and add the movie to the actor movie list,
-#         # else, create a new actor and put it in the actor list in the outer loop
-#         for actor in movieData[1:]:
-#             actorName = cleanActorName(actor).lower()
-#             #movieDict[movieData[0]].append(actorName)
-#             if actorDict.get(actorName):
-#                 newMovie.addActor(actorDict[actorName])
-#             else:
-#                 newActor = Actor(actorName, [])
-#                 newActor.addMovie(newMovie)
-#                 newMovie.addActor(newActor)
-#                 actorDict[actorName] = newActor
-
-#     #for each movie in the dictionary, create an edge between all the actors
-#     for movie in movieDict.keys():
-#         for actor1 in movieDict[movie].actors:
-#             for actor2 in movieDict[movie].actors:
-#                 if actor1 != actor2:
-#                     g.addEdge(actor1.name, actor2.name, cost=movie)
-
-#     return g
-
 
 
 def bfs(g, start):
@@ -154,11 +139,48 @@ def bfs(g, start):
                 nbr.setDistance(currentVert.getDistance() + 1)
                 nbr.setPred(currentVert)
                 vertQueue.enqueue(nbr)
+                # print(nbr.id)
         currentVert.setColor('black')
     return traversedVerts
 
+'''A recursive function to print all paths from 'u' to 'd'.
+visited[] keeps track of vertices in current path.
+path[] stores actual vertices and path_index is current
+index in path[]'''
+def printAllPathsUtil(g, u, d, visited, path):
 
-# def traverse(y):
+    # Mark the current node as visited and store in path
+    visited[u.id]= True
+    path.append(u.id)
+
+    # If current vertex is same as destination, then print
+    # current path[]
+    if u == d:
+        print (path)
+    else:
+        # If current vertex is not destination
+        # Recur for all the vertices adjacent to this vertex
+        for i in g.getVertex(u.id).getConnections():
+            if visited[i.id]== False:
+                printAllPathsUtil(g, i, d, visited, path)
+    # Remove current vertex from path[] and mark it as unvisited
+    path.pop()
+    visited[u.id]= False
+
+
+# Prints all paths from 's' to 'd'
+def printAllPaths(g, s, d):
+
+    # Mark all the vertices as not visited
+    visited = {airport: False for airport in g.getVertices()}
+
+    # Create an array to store paths
+    path = []
+
+    # Call the recursive helper function to print all paths
+    printAllPathsUtil(g, s, d, visited, path)
+
+        # def traverse(y):
 #     x = y
 #     while(x.getPred()):
 #         print(f"{x.getId().title()} is in {x.connectedTo[g.getVertex(x.getPred().getId())]} with {x.getPred().getId().title()}")
@@ -183,4 +205,3 @@ def bfs(g, start):
 
 #     for vert in traversedVerts:
 #         vert.setColor('white')
-
